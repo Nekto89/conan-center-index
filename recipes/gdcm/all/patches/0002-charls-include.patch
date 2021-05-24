@@ -1,0 +1,13 @@
+diff --git a/Utilities/gdcm_charls.h b/Utilities/gdcm_charls.h
+index b80451c..e01d75b 100644
+--- a/Utilities/gdcm_charls.h
++++ b/Utilities/gdcm_charls.h
+@@ -18,7 +18,7 @@
+ #include "gdcmTypes.h"
+ #ifdef GDCM_USE_SYSTEM_CHARLS
+ // It is expected that version 2.0.0 is used
+-# include <CharLS/charls.h>
++# include <charls/charls.h>
+ #else
+ #include "gdcmcharls/charls.h"
+ #endif
