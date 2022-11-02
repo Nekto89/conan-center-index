@@ -1,0 +1,54 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -677,7 +677,7 @@ endif()
+ # Define install
+ # ---------------------------------------
+ 
+-set(qhull_TARGETS_INSTALL ${qhull_TARGETS_APPLICATIONS})
++set(qhull_TARGETS_INSTALL)
+ if (BUILD_SHARED_LIBS)
+     list(APPEND qhull_TARGETS_INSTALL ${qhull_TARGETS_SHARED})
+ endif()
+@@ -710,23 +710,6 @@ configure_file(${PROJECT_SOURCE_DIR}/build/config.cmake.in
+ )
+ 
+ set(ConfigPackageLocation lib/cmake/Qhull)
+-install(EXPORT QhullTargets
+-  FILE
+-    QhullTargets.cmake
+-  NAMESPACE
+-    Qhull::
+-  DESTINATION
+-    ${ConfigPackageLocation}
+-)
+-install(
+-  FILES
+-    "${CMAKE_CURRENT_BINARY_DIR}/QhullExport/QhullConfig.cmake"
+-    "${CMAKE_CURRENT_BINARY_DIR}/QhullExport/QhullConfigVersion.cmake"
+-  DESTINATION
+-    ${ConfigPackageLocation}
+-  COMPONENT
+-    Devel
+-)
+ 
+ set(PkgConfigLocation lib/pkgconfig)
+ foreach(pkgconfig IN ITEMS "${qhull_SHAREDR};Qhull reentrant shared library"
+@@ -743,18 +726,12 @@ foreach(pkgconfig IN ITEMS "${qhull_SHAREDR};Qhull reentrant shared library"
+     endif()
+     list(GET pkgconfig 1 LIBRARY_DESCRIPTION)
+     configure_file(build/qhull.pc.in ${LIBRARY_NAME}.pc @ONLY)
+-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${LIBRARY_NAME}.pc DESTINATION ${PkgConfigLocation} COMPONENT Devel)
+ endforeach()
+ 
+ install(FILES ${libqhull_HEADERS}    DESTINATION ${INCLUDE_INSTALL_DIR}/libqhull)
+ install(FILES src/libqhull/DEPRECATED.txt DESTINATION ${INCLUDE_INSTALL_DIR}/libqhull)
+ install(FILES ${libqhullr_HEADERS}    DESTINATION ${INCLUDE_INSTALL_DIR}/libqhull_r)
+ install(FILES ${libqhullcpp_HEADERS} DESTINATION ${INCLUDE_INSTALL_DIR}/libqhullcpp)
+-install(FILES html/qhull.man         DESTINATION ${MAN_INSTALL_DIR} RENAME qhull.1)
+-install(FILES html/rbox.man          DESTINATION ${MAN_INSTALL_DIR} RENAME rbox.1)
+-install(FILES ${doc_FILES}           DESTINATION ${DOC_INSTALL_DIR})
+-install(DIRECTORY html/              DESTINATION ${DOC_INSTALL_DIR}/html)
+-install(FILES src/Changes.txt        DESTINATION ${DOC_INSTALL_DIR}/src)
+ 
+ add_custom_target(uninstall
+     COMMENT "uninstall Qhull by deleting files in install_manifest.txt"
