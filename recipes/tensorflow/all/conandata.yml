@@ -1,0 +1,14 @@
+sources:
+  "2.12.0":
+    "Windows":
+      "x86_64":
+        url: "https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-cpu-windows-x86_64-2.12.0.zip"
+        sha256: "bbb6c123247104e766437577ce42b426bf14234cd839114e4223fe5e56cc1b99"
+    "Linux":
+      "x86_64":
+        url: "https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-cpu-linux-x86_64-2.12.0.tar.gz"
+        sha256: "d2bd2e98c1afde77f8a033bbf762a812e7e232d6ed62648aa64df7e6cfcc496e"
+    "Macos":
+      "x86_64":
+        url: "https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-cpu-darwin-x86_64-2.12.0.tar.gz"
+        sha256: "9e2cf55f2dc65ff53dac582160aa23eb489856e19b6b9a1af41506d6e9a73338"
