@@ -24,7 +24,7 @@ class ProtobufConan(ConanFile):
     options = {
         "shared": [True, False],
         "fPIC": [True, False],
-        "with_zlib": [True, False],
+        "with_zlib": [False, "zlib", "zlib-ng"],
         "with_rtti": [True, False],
         "lite": [True, False],
         "debug_suffix": [True, False],
@@ -32,7 +32,7 @@ class ProtobufConan(ConanFile):
     default_options = {
         "shared": False,
         "fPIC": True,
-        "with_zlib": True,
+        "with_zlib": "zlib",
         "with_rtti": True,
         "lite": False,
         "debug_suffix": True,
@@ -69,8 +69,10 @@ class ProtobufConan(ConanFile):
         cmake_layout(self, src_folder="src")
 
     def requirements(self):
-        if self.options.with_zlib:
+        if self.options.with_zlib == "zlib":
             self.requires("zlib/[>=1.2.11 <2]")
+        elif self.options.with_zlib == "zlib-ng":
+            self.requires("zlib-ng/2.1.3@user/channel#1aeb509a0960ec067fa90282fa6c2cf0")
 
     def validate(self):
         if self.options.shared and is_msvc_static_runtime(self):
@@ -82,6 +84,11 @@ class ProtobufConan(ConanFile):
             if Version(self.version) >= "3.15.4" and Version(self.settings.compiler.version) < "4":
                 raise ConanInvalidConfiguration(f"{self.ref} doesn't support clang < 4")
 
+        if self.options.with_zlib == "zlib-ng":
+            zlib_ng = self.dependencies["zlib-ng"]
+            if not zlib_ng.options.zlib_compat:
+                raise ConanInvalidConfiguration(f"protobuf:zlib=zlib-ng requires the dependency option zlib-ng:zlib_compat=True")
+
     def source(self):
         get(self, **self.conan_data["sources"][self.version], strip_root=True)
 
@@ -92,7 +99,7 @@ class ProtobufConan(ConanFile):
     def generate(self):
         tc = CMakeToolchain(self)
         tc.cache_variables["CMAKE_INSTALL_CMAKEDIR"] = self._cmake_install_base_path.replace("\\", "/")
-        tc.cache_variables["protobuf_WITH_ZLIB"] = self.options.with_zlib
+        tc.cache_variables["protobuf_WITH_ZLIB"] = bool(self.options.with_zlib)
         tc.cache_variables["protobuf_BUILD_TESTS"] = False
         tc.cache_variables["protobuf_BUILD_PROTOC_BINARIES"] = self.settings.os != "tvOS"
         if not self.options.debug_suffix:
@@ -216,8 +223,10 @@ class ProtobufConan(ConanFile):
         self.cpp_info.components["libprotobuf"].set_property("pkg_config_name", "protobuf")
         self.cpp_info.components["libprotobuf"].builddirs.append(self._cmake_install_base_path)
         self.cpp_info.components["libprotobuf"].libs = [lib_prefix + "protobuf" + lib_suffix]
-        if self.options.with_zlib:
+        if self.options.with_zlib == "zlib":
             self.cpp_info.components["libprotobuf"].requires = ["zlib::zlib"]
+        elif self.options.with_zlib == "zlib-ng":
+            self.cpp_info.components["libprotobuf"].requires = ["zlib-ng::zlib-ng"]
         if self.settings.os in ["Linux", "FreeBSD"]:
             self.cpp_info.components["libprotobuf"].system_libs.extend(["m", "pthread"])
             if self._is_clang_x86 or "arm" in str(self.settings.arch):
