@@ -72,7 +72,7 @@ class ProtobufConan(ConanFile):
         if self.options.with_zlib == "zlib":
             self.requires("zlib/[>=1.2.11 <2]")
         elif self.options.with_zlib == "zlib-ng":
-            self.requires("zlib-ng/2.1.3@user/channel#1aeb509a0960ec067fa90282fa6c2cf0")
+            self.requires("zlib-ng/2.1.3@user/channel")
 
     def validate(self):
         if self.options.shared and is_msvc_static_runtime(self):
