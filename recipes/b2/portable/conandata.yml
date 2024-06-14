@@ -20,3 +20,9 @@ sources:
   "5.2.0":
     url: "https://github.com/bfgroup/b2/releases/download/5.2.0/b2-5.2.0.tar.bz2"
     sha256: "c27adfb4e667d748bb7d3e18657938fa8bcf185b74a29bf091113299f532ed6d"
+patches:
+  "4.10.1":
+    - patch_file: "patches/0001-Fix-VS2022-update-10.patch"
+      patch_description: "fix compilation on VS2022 Update 10"
+      patch_type: "compatibility"
+      patch_source: "https://github.com/bfgroup/b2/pull/372"

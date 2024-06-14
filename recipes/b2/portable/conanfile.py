@@ -2,7 +2,7 @@ from conan import ConanFile
 from conan.errors import ConanInvalidConfiguration
 from conan.tools.build import cross_building
 from conan.tools.env import VirtualBuildEnv
-from conan.tools.files import chdir, copy, get
+from conan.tools.files import apply_conandata_patches, chdir, copy, export_conandata_patches, get
 from conan.tools.layout import basic_layout
 
 from contextlib import contextmanager
@@ -57,6 +57,9 @@ class B2Conan(ConanFile):
         'use_cxx_env': False,
         'toolset': 'auto'
     }
+
+    def export_sources(self):
+        export_conandata_patches(self)
 
     def layout(self):
         basic_layout(self, src_folder="src")
@@ -124,6 +127,7 @@ class B2Conan(ConanFile):
             )
 
     def build(self):
+        apply_conandata_patches(self)
         # The order of the with:with: below is important. The first one changes
         # the current dir. While the second does env changes that guarantees
         # that dir doesn't change if/when vsvars runs to set the msvc compile
