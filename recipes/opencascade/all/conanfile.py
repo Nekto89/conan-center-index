@@ -34,6 +34,7 @@ class OpenCascadeConan(ConanFile):
         "with_openvr": [True, False],
         "with_rapidjson": [True, False],
         "with_draco": [True, False],
+        "with_tcl": [True, False],
         "with_tk": [True, False],
         "with_tbb": [True, False],
         "with_opengl": [True, False],
@@ -47,6 +48,7 @@ class OpenCascadeConan(ConanFile):
         "with_openvr": False,
         "with_rapidjson": False,
         "with_draco": False,
+        "with_tcl": True,
         "with_tk": True,
         "with_tbb": False,
         "with_opengl": True,
@@ -62,6 +64,10 @@ class OpenCascadeConan(ConanFile):
     @property
     def _link_tk(self):
         return self.options.with_tk
+    
+    @property
+    def _link_tcl(self):
+        return self.options.with_tcl
 
     @property
     def _link_opengl(self):
@@ -88,7 +94,8 @@ class OpenCascadeConan(ConanFile):
         cmake_layout(self, src_folder="src")
 
     def requirements(self):
-        self.requires("tcl/8.6.10")
+        if self._link_tcl:
+            self.requires("tcl/8.6.10")
         if self._link_tk:
             self.requires("tk/8.6.10")
         self.requires("freetype/2.13.2")
@@ -162,6 +169,7 @@ class OpenCascadeConan(ConanFile):
         tc.cache_variables["USE_TBB"] = self.options.with_tbb
         tc.cache_variables["USE_RAPIDJSON"] = self.options.with_rapidjson
         tc.cache_variables["USE_DRACO"] = self.options.with_draco
+        tc.cache_variables["USE_TCL"] = self.options.with_tcl
         tc.cache_variables["USE_TK"] = self.options.with_tk
         tc.cache_variables["USE_OPENGL"] = self.options.with_opengl
 
@@ -236,13 +244,14 @@ class OpenCascadeConan(ConanFile):
             f"set (CSF_FREETYPE \"{freetype_libs}\")"
         )
         ## tcl
-        deps_targets.append("tcl::tcl")
-        _replace_find_package(cmakelists, "tcl", "TCL")
-        tcl_libs = " ".join(self.dependencies["tcl"].cpp_info.aggregated_components().libs)
-        csf_tcl_libs = f"set (CSF_TclLibs \"{tcl_libs}\")"
-        replace_in_file(self, occt_csf_cmake, "set (CSF_TclLibs     \"tcl86\")", csf_tcl_libs)
-        replace_in_file(self, occt_csf_cmake, "set (CSF_TclLibs   Tcl)", csf_tcl_libs)
-        replace_in_file(self, occt_csf_cmake, "set (CSF_TclLibs   \"tcl8.6\")", csf_tcl_libs)
+        if self._link_tcl:
+            deps_targets.append("tcl::tcl")
+            _replace_find_package(cmakelists, "tcl", "TCL")
+            tcl_libs = " ".join(self.dependencies["tcl"].cpp_info.aggregated_components().libs)
+            csf_tcl_libs = f"set (CSF_TclLibs \"{tcl_libs}\")"
+            replace_in_file(self, occt_csf_cmake, "set (CSF_TclLibs     \"tcl86\")", csf_tcl_libs)
+            replace_in_file(self, occt_csf_cmake, "set (CSF_TclLibs   Tcl)", csf_tcl_libs)
+            replace_in_file(self, occt_csf_cmake, "set (CSF_TclLibs   \"tcl8.6\")", csf_tcl_libs)
         ## tk
         if self._link_tk:
             deps_targets.append("tk::tk")
@@ -382,7 +391,7 @@ class OpenCascadeConan(ConanFile):
         csf_to_conan_dependencies = {
             # Mandatory dependencies
             "CSF_FREETYPE": {"externals": ["freetype::freetype"]},
-            "CSF_TclLibs": {"externals": ["tcl::tcl"]},
+            "CSF_TclLibs": {"externals": ["tcl::tcl"] if self._link_tcl else []},
             "CSF_fontconfig": {"externals": ["fontconfig::fontconfig"] if self._is_linux else []},
             "CSF_XwLibs": {"externals": ["xorg::xorg"] if self._is_linux else []},
             # Optional dependencies
