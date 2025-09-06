@@ -31,6 +31,7 @@ class OpenCascadeConan(ConanFile):
         "fPIC": [True, False],
         "with_ffmpeg": [True, False],
         "with_freeimage": [True, False],
+        "with_freetype": [True, False],
         "with_openvr": [True, False],
         "with_rapidjson": [True, False],
         "with_draco": [True, False],
@@ -45,6 +46,7 @@ class OpenCascadeConan(ConanFile):
         "fPIC": True,
         "with_ffmpeg": False,
         "with_freeimage": False,
+        "with_freetype": True,
         "with_openvr": False,
         "with_rapidjson": False,
         "with_draco": False,
@@ -60,6 +62,10 @@ class OpenCascadeConan(ConanFile):
     @property
     def _is_linux(self):
         return self.settings.os in ["Linux", "FreeBSD"]
+
+    @property
+    def _link_freetype(self):
+        return self.options.with_freetype
 
     @property
     def _link_tk(self):
@@ -98,7 +104,8 @@ class OpenCascadeConan(ConanFile):
             self.requires("tcl/8.6.10")
         if self._link_tk:
             self.requires("tk/8.6.10")
-        self.requires("freetype/2.13.2")
+        if self._link_freetype:
+            self.requires("freetype/2.13.2")
         if self._link_opengl:
             self.requires("opengl/system")
         if self._is_linux:
@@ -236,15 +243,16 @@ class OpenCascadeConan(ConanFile):
         deps_targets = []
 
         ## freetype
-        deps_targets.append("Freetype::Freetype")
-        _replace_find_package(cmakelists, "freetype", "Freetype")
-        freetype_libs = " ".join(self.dependencies["freetype"].cpp_info.aggregated_components().libs)
-        replace_in_file(
-            self,
-            occt_csf_cmake,
-            "set (CSF_FREETYPE \"freetype\")",
-            f"set (CSF_FREETYPE \"{freetype_libs}\")"
-        )
+        if self._link_freetype:
+            deps_targets.append("Freetype::Freetype")
+            _replace_find_package(cmakelists, "freetype", "Freetype")
+            freetype_libs = " ".join(self.dependencies["freetype"].cpp_info.aggregated_components().libs)
+            replace_in_file(
+                self,
+                occt_csf_cmake,
+                "set (CSF_FREETYPE \"freetype\")",
+                f"set (CSF_FREETYPE \"{freetype_libs}\")"
+            )
         ## tcl
         if self._link_tcl:
             deps_targets.append("tcl::tcl")
@@ -392,7 +400,7 @@ class OpenCascadeConan(ConanFile):
     def _get_modules_from_source_code(self):
         csf_to_conan_dependencies = {
             # Mandatory dependencies
-            "CSF_FREETYPE": {"externals": ["freetype::freetype"]},
+            "CSF_FREETYPE": {"externals": ["freetype::freetype"] if self._link_freetype else []},
             "CSF_TclLibs": {"externals": ["tcl::tcl"] if self._link_tcl else []},
             "CSF_fontconfig": {"externals": ["fontconfig::fontconfig"] if self._is_linux else []},
             "CSF_XwLibs": {"externals": ["xorg::xorg"] if self._is_linux else []},
