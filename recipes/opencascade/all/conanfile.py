@@ -169,6 +169,7 @@ class OpenCascadeConan(ConanFile):
             tc.cache_variables["USE_D3D"] = False
         tc.cache_variables["BUILD_ENABLE_FPE_SIGNAL_HANDLER"] = False
         tc.cache_variables["BUILD_DOC_Overview"] = False
+        tc.cache_variables["BUILD_MODULE_ApplicationFramework"] = False
         tc.cache_variables["BUILD_MODULE_DataExchange"] = False
         tc.cache_variables["BUILD_MODULE_Draw"] = False
         tc.cache_variables["BUILD_MODULE_DETools"] = False
@@ -445,7 +446,7 @@ class OpenCascadeConan(ConanFile):
         # MODULES: lists all modules and all possible components per module
         modules_content = load(self, os.path.join(self.source_folder, "adm", "MODULES"))
         packaged_libs_list = collect_libs(self, "lib")
-        disabled_modules = ["DataExchange", "DETools", "Draw", "Visualization"]
+        disabled_modules = ["ApplicationFramework", "DataExchange", "DETools", "Draw", "Visualization"]
         for module_line in modules_content.splitlines():
             components = {}
             module_components = module_line.split()
