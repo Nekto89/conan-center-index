@@ -162,6 +162,8 @@ class OpenCascadeConan(ConanFile):
             tc.cache_variables["USE_D3D"] = False
         tc.cache_variables["BUILD_ENABLE_FPE_SIGNAL_HANDLER"] = False
         tc.cache_variables["BUILD_DOC_Overview"] = False
+        tc.cache_variables["BUILD_MODULE_Draw"] = False
+        tc.cache_variables["BUILD_MODULE_Visualization"] = False
 
         tc.cache_variables["USE_FREEIMAGE"] = self.options.with_freeimage
         tc.cache_variables["USE_OPENVR"] = self.options.with_openvr
@@ -436,6 +438,8 @@ class OpenCascadeConan(ConanFile):
         for module_line in modules_content.splitlines():
             components = {}
             module_components = module_line.split()
+            if module_components[0] == "Draw" or module_components[0] == "Visualization":
+                continue
             components_list = [component for component in module_components[1:] if component in packaged_libs_list]
             for component_name in components_list:
                 component_deps = {}
