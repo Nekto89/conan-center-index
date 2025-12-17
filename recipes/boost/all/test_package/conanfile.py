@@ -48,6 +48,14 @@ class TestPackageConan(ConanFile):
         tc.cache_variables["WITH_URL"] = not self._boost_option("without_url", True)
         if self.dependencies["boost"].options.namespace != 'boost' and not self.dependencies["boost"].options.namespace_alias:
             tc.cache_variables['BOOST_NAMESPACE'] = self.dependencies["boost"].options.namespace
+
+        #iostreams can have multiple thirdparty dependencies
+        tc.cache_variables["WITH_IOSTREAMS"] = not self._boost_option("without_iostreams", True)
+        tc.cache_variables["WITH_ZLIB"] = self._boost_option("zlib", False)
+        tc.cache_variables["WITH_BZIP2"] = self._boost_option("bzip2", False)
+        tc.cache_variables["WITH_LZMA"] = self._boost_option("lzma", False)
+        tc.cache_variables["WITH_ZSTD"] = self._boost_option("zstd", False)
+
         tc.generate()
 
     def build(self):
