@@ -80,9 +80,10 @@ class LibjpegTurboConan(ConanFile):
         cmake_layout(self, src_folder="src")
 
     def requirements(self):
-        if Version(self.version) >= "3.2.0" and self.options.get_safe("turbojpeg", False):
-            self.requires("libspng/0.7.4")
-            self.requires("zlib/[>=1.2.11 <2]")
+        pass
+        #if Version(self.version) >= "3.2.0" and self.options.get_safe("turbojpeg", False):
+        #    self.requires("libspng/0.7.4")
+        #    self.requires("zlib/[>=1.2.11 <2]")
 
     def validate(self):
         if self.options.get_safe("enable12bit") and (self.options.libjpeg7_compatibility or self.options.libjpeg8_compatibility):
@@ -92,8 +93,8 @@ class LibjpegTurboConan(ConanFile):
                 raise ConanInvalidConfiguration("java wrapper requires shared libjpeg-turbo")
             if not self.options.get_safe("turbojpeg") and Version(self.version) >= "3.1.4.1":
                 raise ConanInvalidConfiguration("java wrapper needs to be built with turbojpeg API")
-        if self.options.shared and is_msvc(self) and is_msvc_static_runtime(self):
-            raise ConanInvalidConfiguration(f"{self.ref} shared can't be built with static vc runtime")
+        #if self.options.shared and is_msvc(self) and is_msvc_static_runtime(self):
+        #    raise ConanInvalidConfiguration(f"{self.ref} shared can't be built with static vc runtime")
 
     def build_requirements(self):
         if self.options.get_safe("SIMD") and self.settings.arch in ["x86", "x86_64"]:
@@ -130,9 +131,9 @@ class LibjpegTurboConan(ConanFile):
             tc.variables["WITH_JAVA"] = self.options.get_safe("java", False)
         else:
             tc.variables["WITH_JNA"] = False # not implemented
-            if self.options.get_safe("turbojpeg", False):
-                tc.variables["WITH_SYSTEM_SPNG"] = True
-                tc.variables["WITH_SYSTEM_ZLIB"] = True
+            #if self.options.get_safe("turbojpeg", False):
+            #    tc.variables["WITH_SYSTEM_SPNG"] = True
+            #    tc.variables["WITH_SYSTEM_ZLIB"] = True
         tc.cache_variables["WITH_TOOLS"] = False
         if Version(self.version) < "3.0.0":
             tc.variables["WITH_MEM_SRCDST"] = self.options.get_safe("mem_src_dst", False)

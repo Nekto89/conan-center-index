@@ -15,3 +15,19 @@
    message(STATUS "Visual C++ run-time library for libjpeg API DLL: ${CMAKE_MSVC_RUNTIME_LIBRARY}")
  endif()
  
+@@ -71,15 +63,6 @@ endif()
+ if(MSVC_LIKE)
+   set_target_properties(jpeg PROPERTIES
+     RUNTIME_OUTPUT_NAME jpeg${SO_MAJOR_VERSION})
+-  # The jsimd_*.c file is built to use libcmt or libcmtd, so this prevents a
+-  # linker warning.
+-  if(MSVC)
+-    set_target_properties(jpeg PROPERTIES LINK_FLAGS
+-      "/NODEFAULTLIB:LIBCMT /NODEFAULTLIB:LIBCMTD")
+-  else()
+-    set_target_properties(jpeg PROPERTIES LINK_FLAGS
+-      "-Wl,-nodefaultlib:libcmt -Wl,-nodefaultlib:libcmtd")
+-  endif()
+ elseif(MINGW)
+   set_target_properties(jpeg PROPERTIES SUFFIX -${SO_MAJOR_VERSION}.dll)
+ endif()
